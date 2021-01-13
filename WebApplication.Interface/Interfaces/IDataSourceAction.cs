@@ -5,6 +5,6 @@ namespace WebApplication.Interface
 {
     public interface IDataSourceAction
     {
-        public List<RestaurantInfo> Find(string text);
+        public List<RestaurantInfo> GetData();
     }
 }

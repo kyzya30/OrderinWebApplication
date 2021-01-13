@@ -8,12 +8,11 @@ namespace WebApplication.DB.Repository
 {
     public class JsonSourceRepository : IDataSourceAction
     {
-        public List<RestaurantInfo> Find(string text)
+        public List<RestaurantInfo> GetData()
         {
             try
             {
                 var restaurantInfo = JsonData.GetJsonRestaurantInfo();
-
 
                 return restaurantInfo;
 
