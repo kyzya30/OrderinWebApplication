@@ -6,16 +6,19 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using WebApplication.Service;
 
 namespace OrderinWebApplication.Controllers
 {
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly RestaurantService restaurantService;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> logger, RestaurantService restaurantService)
         {
             _logger = logger;
+            this.restaurantService = restaurantService;
         }
 
         public IActionResult Index()
@@ -33,5 +36,16 @@ namespace OrderinWebApplication.Controllers
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
+
+        [HttpGet]
+        [Route("Home/Search")]
+        public async Task<IActionResult> Search(string text)
+        {
+            //var restaurants = 
+                await restaurantService.SearchRestaurants(text);
+           // return restaurants;
+           return null;
+        }
+
     }
 }

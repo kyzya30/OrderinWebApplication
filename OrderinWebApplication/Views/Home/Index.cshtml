@@ -2,7 +2,69 @@
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+
+
+<div class="main">
+  
+  
+  
+    <!-- Another variation with a button -->
+    <div class="input-group">
+        <input id="searchValue" type="text" class="form-control" placeholder="Please enter value">
+        <div class="input-group-append">
+            <button class="btn btn-secondary" onclick="SearchAction()" type="button">
+                Search
+                <i class="fa fa-search"></i>
+            </button>
+        </div>
+    </div>
+
+  
 </div>
+<script>
+    function SearchAction() {
+
+        var text = $('#searchValue').val();
+
+        $.ajax({
+            url: "Home/Search",
+            type: "GET", //send it through get method
+            data: {
+                text: text
+            },
+            success: function(response) {
+                //Do Something
+            },
+            error: function(xhr) {
+                //Do Something to handle error
+            }
+        });
+    }
+
+</script>
+
+<style>
+    .main {
+        width: 50%;
+        margin: 50px auto;
+    }
+
+    /* Bootstrap 4 text input with search icon */
+
+    .has-search .form-control {
+        padding-left: 2.375rem;
+    }
+
+    .has-search .form-control-feedback {
+        position: absolute;
+        z-index: 2;
+        display: block;
+        width: 2.375rem;
+        height: 2.375rem;
+        line-height: 2.375rem;
+        text-align: center;
+        pointer-events: none;
+        color: #aaa;
+    }
+     
+</style>
