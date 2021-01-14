@@ -3,12 +3,8 @@
 }
 
 
-
 <div class="main">
-  
-  
-  
-    <!-- Another variation with a button -->
+
     <div class="input-group">
         <input id="searchValue" type="text" class="form-control" placeholder="Please enter value">
         <div class="input-group-append">
@@ -17,29 +13,116 @@
                 <i class="fa fa-search"></i>
             </button>
         </div>
-    </div>
 
-  
+    </div>
+    <div id="place"></div>
+
 </div>
 <script>
+
+
     function SearchAction() {
 
         var text = $('#searchValue').val();
 
         $.ajax({
             url: "Home/Search",
-            type: "GET", //send it through get method
+            type: "GET", 
             data: {
                 text: text
             },
             success: function(response) {
-                //Do Something
+                buildHtmlText(response);
             },
             error: function(xhr) {
                 //Do Something to handle error
             }
         });
     }
+
+    function buildHtmlText(array) {
+        $('#place').empty();
+
+        var searchText = $('#searchValue').val();
+
+        var split = searchText.split("in");
+
+
+        var html = "<div style='margin:20px'><b>"+ split[0] +"</b> restaurants in <b>"+ split[1] +"</b> we found for you:</div>";
+
+        for (var i = 0; i < array.length; i++) {
+            html += "<div style='margin:20px'><img style='width:40px;height:40px' src='" + array[i].logoPath + "' ></img> " + array[i].name + " - " + array[i].suburb + " - rated #" + array[i].rank + " overall </div>";
+
+            if (array[i].categories[0].name != "") {
+                html += "<div style='font-weight:bold; margin-left:65px'>" + array[i].categories[0].name + "</div>";
+            }
+
+            var checkboxList = "<ul style='margin-left:70px'>";
+            for (var z = 0; z < array[i].categories[0].menuItems.length; z++) {
+
+                checkboxList += "<li><input type='checkbox' id='" + array[i].categories[0].menuItems[z].id + "' data-price='" + array[i].categories[0].menuItems[z].price + "' /> " + array[i].categories[0].menuItems[z].name + " - R" + array[i].categories[0].menuItems[z].price + "</li>";
+
+            }
+            checkboxList += "</ul>";
+
+            html += checkboxList;
+
+
+        }
+        html += "<div style='margin:0 auto; width:80px'><input id='orderBtn' onclick='order()' type='button' value='Order R0'></input></div>";
+        $('#place').append(html);
+
+        var checkboxes = document.querySelectorAll('input[type=checkbox]'),
+            checkboxArray = Array.from(checkboxes);
+
+        checkboxArray.forEach(function(checkbox) {
+            checkbox.addEventListener('change', confirmCheck);
+        });
+
+    }
+
+    var PriceCnt = 0;
+
+
+    function confirmCheck() {
+        if (this.checked) {
+            PriceCnt += parseInt(this.dataset.price);
+        } else {
+            PriceCnt -= parseInt(this.dataset.price);
+        }
+        $('#orderBtn').val('Order - R' + PriceCnt);
+    }
+
+    function order() {
+       
+      
+        if (PriceCnt === 0) {
+            swal("Nothing to order. Please select dish!");
+        }
+        else {
+            var arrayOfId = [];
+
+            $("input:checkbox:checked").each(function () {
+                arrayOfId.push($(this).attr("id"));
+            });
+
+
+            $.ajax({
+                url: "Home/Order",
+                type: "POST", //send it through get method
+                data: {
+                    selectedMenuItemId: arrayOfId
+                },
+                success: function(response) {
+                    swal("Success", "Your order has been placed!\nLeave the rest up to the chefs and our drivers!");
+                },
+                error: function(xhr) {
+                    //Do Something to handle error
+                }
+            });
+        }
+    }
+
 
 </script>
 

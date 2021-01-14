@@ -14,44 +14,89 @@ namespace WebApplication.Service
             
         }
 
-        public async Task SearchRestaurants(string text)
+        public async Task<List<RestaurantInfo>> SearchRestaurants(string text)
         {
             IDataSourceAction json = new JsonSourceRepository();
 
             List<RestaurantInfo> restaurantInfos = json.GetData();
 
-            FindData(restaurantInfos, text);
+            return FindData(restaurantInfos, text);
 
         }
 
-        private void FindData(List<RestaurantInfo> data, string searchText)
+        private List<RestaurantInfo> FindData(List<RestaurantInfo> data, string searchText)
         {
-            var splitText = searchText.Split(' ');
-            var cityList = data.Where(e => splitText.Any(z => e.City.Contains(z))).ToList();
+            var splitText = searchText.ToLower().Split("in");
+            var keyword = splitText[0].Trim();
+            var location = splitText[1].Trim();
 
-            var directMenuItemsSearch = new List<RestaurantInfo>();
-            var categoryNameItem = new List<RestaurantInfo>();
+            var cityList = data.Where(e => e.City.ToLower().Contains(location)).ToList();
+
+            var searchedItems = new List<RestaurantInfo>();
 
 
             foreach (var city in cityList)
             {
+                if (city.Id == 1874)
+                {
+                    var z = 0;
+                }
+
                 foreach (var category in city.Categories)
                 {
-                    var directMenuItem = category.MenuItems.Where(e => splitText.Any(z => e.Name.Contains(z))).ToList();
-                    if (directMenuItem.Count > 0)
+                    bool outerFlagBreak = false;
+
+
+                    //Category Name Search
+                   
+                   // var isNameCategory = splitText.Any(z => category.Name.Contains(z));
+                    if (category.Name.ToLower().Contains(keyword))
                     {
-                        directMenuItemsSearch.Add(city);
+                        var copyOfCity = city;
+
+                        copyOfCity.Categories = new List<Category>{ category };
+
+                        searchedItems.Add(copyOfCity);
 
                         break;
                     }
 
-                    var menuItem = splitText.Any(z => category.Name.Contains(z));
-                    if (menuItem == true)
+                    //Menu Items Search
+
+                    foreach (var menuItem in category.MenuItems)
                     {
-                        categoryNameItem.Add(city);
+                     
+
+                        // var hasNameInMenuItems = splitText.Any(z => menuItem.Name.ToLower().Contains(z));
+                        if (menuItem.Name.ToLower().Contains(keyword))
+                        {
+                            var copyOfCity = city;
+                            var copyOfCategory = category;
+
+                            copyOfCategory.Name = "";
+                            copyOfCategory.MenuItems = category.MenuItems;
+
+                            copyOfCity.Categories = new List<Category> { copyOfCategory };
+
+                            searchedItems.Add(copyOfCity);
+
+                            outerFlagBreak = true;
+
+                            break;
+
+                        }
                     }
-                }   
+
+                    if (outerFlagBreak == true)
+                    {
+                        break; //Exit from search category because we find value in  //Menu Items Search
+                    }
+
+
+                }
             }
+
+            return searchedItems.OrderBy(e => e.Name).ThenBy(e => e.Suburb).ThenBy(e =>  e.Rank).ToList();
 
         }
     }

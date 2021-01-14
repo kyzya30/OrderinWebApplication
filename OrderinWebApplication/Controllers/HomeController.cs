@@ -5,7 +5,9 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
+using WebApplication.DB.Entities;
 using WebApplication.Service;
 
 namespace OrderinWebApplication.Controllers
@@ -39,12 +41,18 @@ namespace OrderinWebApplication.Controllers
 
         [HttpGet]
         [Route("Home/Search")]
-        public async Task<IActionResult> Search(string text)
+        public async Task<List<RestaurantInfo>> Search(string text)
         {
-            //var restaurants = 
-                await restaurantService.SearchRestaurants(text);
-           // return restaurants;
-           return null;
+            var restaurants = await restaurantService.SearchRestaurants(text);
+            return restaurants;
+        }
+
+        [HttpPost]
+        [Route("Home/Order")]
+        public async Task<bool> Order(int[] selectedMenuItemId)
+        {
+            Thread.Sleep(200);//Simulate action
+            return true;
         }
 
     }
