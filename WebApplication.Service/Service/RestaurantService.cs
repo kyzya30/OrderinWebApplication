@@ -48,8 +48,7 @@ namespace WebApplication.Service
 
 
                     //Category Name Search
-                   
-                   // var isNameCategory = splitText.Any(z => category.Name.Contains(z));
+                    
                     if (category.Name.ToLower().Contains(keyword))
                     {
                         var copyOfCity = city;
@@ -65,9 +64,6 @@ namespace WebApplication.Service
 
                     foreach (var menuItem in category.MenuItems)
                     {
-                     
-
-                        // var hasNameInMenuItems = splitText.Any(z => menuItem.Name.ToLower().Contains(z));
                         if (menuItem.Name.ToLower().Contains(keyword))
                         {
                             var copyOfCity = city;
@@ -92,12 +88,10 @@ namespace WebApplication.Service
                         break; //Exit from search category because we find value in  //Menu Items Search
                     }
 
-
                 }
             }
 
             return searchedItems.OrderBy(e => e.Name).ThenBy(e => e.Suburb).ThenBy(e =>  e.Rank).ToList();
-
         }
     }
 }
